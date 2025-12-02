@@ -55,10 +55,17 @@ func NewRegistry(cfg config.ScraperConfig) *Registry {
 	registry.sources["remoteok_indonesia"] = NewRemoteOKIndonesiaScraper(client)
 
 	// Register Jakarta/Bekasi specific scrapers (entry-level friendly)
-	registry.sources["jakarta_bekasi_jobs"] = NewJakartaBekasiJobScraper(client)
-	registry.sources["entry_level_jobs"] = NewEntryLevelJobScraper(client)
-	registry.sources["remote_jakarta"] = NewRemoteJakartaScraper(client)
-	registry.sources["loker_jakarta"] = NewLokerJakartaScraper(client)
+	// These scrape REAL job listings with actual details
+	registry.sources["jakarta_bekasi_jobs"] = NewJakartaBekasiRealScraper(client)
+	registry.sources["entry_level_jobs"] = NewEntryLevelRealScraper(client)
+	registry.sources["remote_jakarta"] = NewRemoteJakartaRealScraper(client)
+	registry.sources["loker_jakarta"] = NewLokerJakartaRealScraper(client)
+
+	// Individual real job scrapers
+	registry.sources["glints_jobs"] = NewGlintsRealJobScraper(client)
+	registry.sources["jobstreet_jobs"] = NewJobstreetRealScraper(client)
+	registry.sources["kalibrr_jobs"] = NewKalibrrRealScraper(client)
+	registry.sources["indeed_jobs"] = NewIndeedRealScraper(client)
 
 	return registry
 }
