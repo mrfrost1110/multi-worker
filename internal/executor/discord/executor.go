@@ -116,6 +116,7 @@ func (e *Executor) Execute(ctx context.Context, input *model.ExecutorResult, con
 			"status":  "sent",
 			"webhook": maskWebhook(webhookURL),
 		},
+		ItemCount: input.ItemCount,
 		Metadata: map[string]interface{}{
 			"items_sent": input.ItemCount,
 		},
