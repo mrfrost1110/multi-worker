@@ -1,0 +1,42 @@
+{
+  "name": "Golang Remote Jobs",
+  "description": "Scrape golang remote jobs from multiple sources and notify Discord",
+  "schedule": "0 */2 * * *",
+  "pipeline": [
+    {
+      "type": "scraper",
+      "name": "Scrape Job Boards",
+      "config": {
+        "sources": ["remoteok", "weworkremotely"],
+        "query": "golang",
+        "limit": 15
+      }
+    },
+    {
+      "type": "filter",
+      "name": "Deduplicate and Filter",
+      "config": {
+        "deduplicate": true,
+        "include_keywords": ["golang", "go", "backend"],
+        "exclude_keywords": ["intern", "junior only"]
+      }
+    },
+    {
+      "type": "ai_processor",
+      "name": "Summarize Jobs",
+      "config": {
+        "provider": "openai",
+        "prompt": "Analyze these job listings and create a concise summary for each. Include: company, position, salary (if available), key requirements, and remote status. Format as a Discord-friendly message with emojis.",
+        "system_prompt": "You are a job market analyst. Be concise and highlight the most important details."
+      }
+    },
+    {
+      "type": "discord",
+      "name": "Notify Discord",
+      "config": {
+        "username": "Job Hunter Bot",
+        "color": 5814783
+      }
+    }
+  ]
+}

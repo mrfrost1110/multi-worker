@@ -1,0 +1,42 @@
+{
+  "name": "Freelance Project Monitor",
+  "description": "Monitor freelance platforms for Python/Go projects",
+  "schedule": "0 */4 * * *",
+  "pipeline": [
+    {
+      "type": "scraper",
+      "name": "Scrape Freelance Platforms",
+      "config": {
+        "sources": ["upwork", "freelancer"],
+        "query": "python golang api backend",
+        "limit": 20
+      }
+    },
+    {
+      "type": "filter",
+      "name": "Quality Filter",
+      "config": {
+        "deduplicate": true,
+        "exclude_keywords": ["$5", "$10", "$15", "cheap", "urgent low budget"],
+        "include_keywords": ["api", "backend", "python", "golang", "microservices"]
+      }
+    },
+    {
+      "type": "ai_processor",
+      "name": "Evaluate Projects",
+      "config": {
+        "provider": "anthropic",
+        "prompt": "Review these freelance projects and rate them from 1-5 stars based on: budget fairness, project clarity, and skill match for a senior backend developer. Only include projects rated 3+ stars. Format for Discord.",
+        "system_prompt": "You are an experienced freelancer who knows which projects are worth pursuing."
+      }
+    },
+    {
+      "type": "discord",
+      "name": "Notify Freelance Channel",
+      "config": {
+        "username": "Freelance Scout",
+        "color": 16776960
+      }
+    }
+  ]
+}

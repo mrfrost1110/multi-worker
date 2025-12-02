@@ -1,0 +1,108 @@
+package ai
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+
+	"github.com/multi-worker/internal/config"
+)
+
+// OpenRouterProvider uses OpenAI-compatible API
+type OpenRouterProvider struct {
+	apiKey  string
+	model   string
+	baseURL string
+	client  *http.Client
+}
+
+func NewOpenRouterProvider(cfg config.OpenRouterConfig) *OpenRouterProvider {
+	return &OpenRouterProvider{
+		apiKey:  cfg.APIKey,
+		model:   cfg.Model,
+		baseURL: cfg.BaseURL,
+		client: &http.Client{
+			Timeout: 60 * time.Second,
+		},
+	}
+}
+
+func (p *OpenRouterProvider) Name() string {
+	return "openrouter"
+}
+
+func (p *OpenRouterProvider) Complete(ctx context.Context, prompt string, systemPrompt string) (string, error) {
+	messages := []openAIMessage{}
+
+	if systemPrompt != "" {
+		messages = append(messages, openAIMessage{
+			Role:    "system",
+			Content: systemPrompt,
+		})
+	}
+
+	messages = append(messages, openAIMessage{
+		Role:    "user",
+		Content: prompt,
+	})
+
+	reqBody := openAIRequest{
+		Model:       p.model,
+		Messages:    messages,
+		Temperature: 0.7,
+		MaxTokens:   4096,
+	}
+
+	return p.doRequest(ctx, reqBody)
+}
+
+func (p *OpenRouterProvider) CompleteWithJSON(ctx context.Context, prompt string, systemPrompt string) (string, error) {
+	return p.Complete(ctx, prompt, systemPrompt+" Respond only with valid JSON.")
+}
+
+func (p *OpenRouterProvider) doRequest(ctx context.Context, reqBody openAIRequest) (string, error) {
+	jsonBody, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", p.baseURL+"/chat/completions", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+p.apiKey)
+	req.Header.Set("HTTP-Referer", "https://github.com/multi-worker")
+	req.Header.Set("X-Title", "Multi-Worker Scheduler")
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to make request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response: %w", err)
+	}
+
+	var result openAIResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to parse response: %w", err)
+	}
+
+	if result.Error != nil {
+		return "", fmt.Errorf("OpenRouter API error: %s", result.Error.Message)
+	}
+
+	if len(result.Choices) == 0 {
+		return "", fmt.Errorf("no response from OpenRouter")
+	}
+
+	return result.Choices[0].Message.Content, nil
+}

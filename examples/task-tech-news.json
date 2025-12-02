@@ -1,0 +1,48 @@
+{
+  "name": "Daily Tech News Digest",
+  "description": "Aggregate and summarize tech news from multiple RSS feeds",
+  "schedule": "0 8 * * *",
+  "pipeline": [
+    {
+      "type": "rss",
+      "name": "Fetch RSS Feeds",
+      "config": {
+        "urls": [
+          "https://hnrss.org/frontpage",
+          "https://techcrunch.com/feed/",
+          "https://www.theverge.com/rss/index.xml",
+          "https://dev.to/feed",
+          "https://lobste.rs/rss"
+        ],
+        "limit": 30,
+        "keywords": ["ai", "llm", "golang", "rust", "startup", "open source", "developer"]
+      }
+    },
+    {
+      "type": "filter",
+      "name": "Dedupe and Limit",
+      "config": {
+        "deduplicate": true,
+        "limit": 15
+      }
+    },
+    {
+      "type": "ai_processor",
+      "name": "Create Digest",
+      "config": {
+        "provider": "openai",
+        "prompt": "Create a morning tech news digest from these articles. Group them by category (AI/ML, Programming, Startups, etc.). Write a brief 1-2 sentence summary for each. Include the source. Keep the total under 1800 characters for Discord. Add relevant emojis.",
+        "system_prompt": "You are a tech journalist creating a daily digest for developers. Be informative but concise."
+      }
+    },
+    {
+      "type": "discord",
+      "name": "Post to Discord",
+      "config": {
+        "username": "Tech News Bot",
+        "template": "☀️ **Good Morning! Here's your Tech Digest**\n\n{{.}}",
+        "color": 3447003
+      }
+    }
+  ]
+}

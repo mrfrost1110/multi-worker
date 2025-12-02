@@ -1,0 +1,42 @@
+{
+  "name": "HackerNews Who's Hiring",
+  "description": "Monitor HackerNews job posts for relevant opportunities",
+  "schedule": "0 */6 * * *",
+  "pipeline": [
+    {
+      "type": "scraper",
+      "name": "Scrape HN Jobs",
+      "config": {
+        "source": "hackernews_jobs",
+        "query": "remote",
+        "limit": 25
+      }
+    },
+    {
+      "type": "filter",
+      "name": "Filter Relevant Jobs",
+      "config": {
+        "deduplicate": true,
+        "include_keywords": ["remote", "golang", "python", "rust", "backend", "distributed"],
+        "exclude_keywords": ["onsite only", "no remote", "visa required"]
+      }
+    },
+    {
+      "type": "ai_processor",
+      "name": "Analyze and Rank",
+      "config": {
+        "provider": "deepseek",
+        "prompt": "Analyze these HackerNews job postings. For each, extract: Company (with YC batch if mentioned), Role, Tech Stack, Remote Policy, and Salary Range (if mentioned). Rank the top 5 most interesting for a senior backend developer. Format for Discord with emojis.",
+        "system_prompt": "You are a career advisor specializing in tech jobs. Focus on quality opportunities with good companies."
+      }
+    },
+    {
+      "type": "discord",
+      "name": "Post to Jobs Channel",
+      "config": {
+        "username": "HN Jobs Bot",
+        "color": 16737095
+      }
+    }
+  ]
+}

@@ -1,0 +1,1609 @@
+basePath: /api/v1
+definitions:
+  model.CreateDiscordBotRequest:
+    properties:
+      application_id:
+        type: string
+      client_id:
+        type: string
+      client_secret:
+        type: string
+      is_default:
+        type: boolean
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      public_key:
+        type: string
+      token:
+        type: string
+    required:
+    - application_id
+    - client_id
+    - name
+    - token
+    type: object
+  model.CreateDiscordChannelRequest:
+    properties:
+      bot_id:
+        type: string
+      channel_id:
+        type: string
+      description:
+        type: string
+      guild_id:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      webhook_url:
+        type: string
+    required:
+    - bot_id
+    - channel_id
+    - name
+    type: object
+  model.CreateTaskRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      pipeline:
+        items:
+          $ref: '#/definitions/model.PipelineStep'
+        minItems: 1
+        type: array
+      schedule:
+        type: string
+    required:
+    - name
+    - pipeline
+    - schedule
+    type: object
+  model.DiscordBot:
+    properties:
+      application_id:
+        type: string
+      client_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      is_default:
+        type: boolean
+      name:
+        type: string
+      public_key:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.DiscordBotWithChannels:
+    properties:
+      application_id:
+        type: string
+      channels:
+        items:
+          $ref: '#/definitions/model.DiscordChannel'
+        type: array
+      client_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      is_default:
+        type: boolean
+      name:
+        type: string
+      public_key:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.DiscordChannel:
+    properties:
+      bot_id:
+        type: string
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      webhook_id:
+        type: string
+    type: object
+  model.EmbedConfig:
+    properties:
+      color:
+        type: integer
+      footer_icon:
+        type: string
+      footer_text:
+        type: string
+      thumbnail_url:
+        type: string
+      title:
+        type: string
+    type: object
+  model.Execution:
+    properties:
+      duration_ms:
+        type: integer
+      error:
+        type: string
+      finished_at:
+        type: string
+      id:
+        type: string
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/model.ExecutionStatus'
+      step_results:
+        items:
+          $ref: '#/definitions/model.StepResult'
+        type: array
+      task_id:
+        type: string
+      task_name:
+        type: string
+      triggered_by:
+        description: '"schedule" or "manual" or user_id'
+        type: string
+    type: object
+  model.ExecutionStatus:
+    enum:
+    - pending
+    - running
+    - completed
+    - failed
+    type: string
+    x-enum-varnames:
+    - ExecutionStatusPending
+    - ExecutionStatusRunning
+    - ExecutionStatusCompleted
+    - ExecutionStatusFailed
+  model.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.LoginResponse:
+    properties:
+      expires_at:
+        type: integer
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
+  model.PipelineStep:
+    properties:
+      config:
+        additionalProperties: true
+        type: object
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 2
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  model.SetTaskDiscordConfigRequest:
+    properties:
+      avatar_url:
+        type: string
+      bot_id:
+        type: string
+      channel_id:
+        type: string
+      embed_config:
+        $ref: '#/definitions/model.EmbedConfig'
+      message_template:
+        type: string
+      username:
+        type: string
+      webhook_url:
+        type: string
+    type: object
+  model.StepResult:
+    properties:
+      error:
+        type: string
+      finished_at:
+        type: string
+      output: {}
+      started_at:
+        type: string
+      status:
+        type: string
+      step_name:
+        type: string
+      step_type:
+        type: string
+    type: object
+  model.Task:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      last_run_at:
+        type: string
+      name:
+        type: string
+      next_run_at:
+        type: string
+      pipeline:
+        items:
+          $ref: '#/definitions/model.PipelineStep'
+        type: array
+      schedule:
+        description: Cron expression
+        type: string
+      status:
+        $ref: '#/definitions/model.TaskStatus'
+      updated_at:
+        type: string
+    type: object
+  model.TaskDiscordConfig:
+    properties:
+      avatar_url:
+        type: string
+      bot_id:
+        type: string
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      embed_config:
+        $ref: '#/definitions/model.EmbedConfig'
+      id:
+        type: string
+      message_template:
+        type: string
+      task_id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  model.TaskStatus:
+    enum:
+    - enabled
+    - disabled
+    - running
+    type: string
+    x-enum-varnames:
+    - TaskStatusEnabled
+    - TaskStatusDisabled
+    - TaskStatusRunning
+  model.UpdateDiscordBotRequest:
+    properties:
+      client_secret:
+        type: string
+      is_active:
+        type: boolean
+      is_default:
+        type: boolean
+      name:
+        type: string
+      token:
+        type: string
+    type: object
+  model.UpdateDiscordChannelRequest:
+    properties:
+      description:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      webhook_url:
+        type: string
+    type: object
+  model.UpdateTaskRequest:
+    properties:
+      description:
+        maxLength: 500
+        type: string
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      pipeline:
+        items:
+          $ref: '#/definitions/model.PipelineStep'
+        type: array
+      schedule:
+        type: string
+      status:
+        $ref: '#/definitions/model.TaskStatus'
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      role:
+        $ref: '#/definitions/model.UserRole'
+      updated_at:
+        type: string
+    type: object
+  model.UserRole:
+    enum:
+    - admin
+    - user
+    type: string
+    x-enum-varnames:
+    - UserRoleAdmin
+    - UserRoleUser
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: Dynamic AI-Powered Task Scheduler with multi-provider AI integration
+    for scraping jobs, news, and content, then intelligently processing and delivering
+    notifications to Discord.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Multi-Worker API
+  version: "1.0"
+paths:
+  /auth/api-key/regenerate:
+    post:
+      description: Generate a new API key for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New API key
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Regenerate API key
+      tags:
+      - Authentication
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - Authentication
+  /auth/profile:
+    get:
+      description: Get the current user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get user profile
+      tags:
+      - Authentication
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with email and password
+      parameters:
+      - description: Registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Email already registered
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Authentication
+  /discord/bots:
+    get:
+      description: Get all registered Discord bots
+      parameters:
+      - description: Include inactive bots
+        in: query
+        name: include_inactive
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of bots
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: List Discord bots
+      tags:
+      - Discord Bots
+    post:
+      consumes:
+      - application/json
+      description: Register a new Discord bot with credentials
+      parameters:
+      - description: Bot credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDiscordBotRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.DiscordBot'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Create a Discord bot
+      tags:
+      - Discord Bots
+  /discord/bots/{botId}:
+    delete:
+      description: Delete a bot and all associated channels
+      parameters:
+      - description: Bot ID
+        in: path
+        name: botId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deletion status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Bot not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Delete a Discord bot
+      tags:
+      - Discord Bots
+    get:
+      description: Get bot details with associated channels
+      parameters:
+      - description: Bot ID
+        in: path
+        name: botId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DiscordBotWithChannels'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Bot not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get a Discord bot
+      tags:
+      - Discord Bots
+    put:
+      consumes:
+      - application/json
+      description: Update bot settings or credentials
+      parameters:
+      - description: Bot ID
+        in: path
+        name: botId
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateDiscordBotRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DiscordBot'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Update a Discord bot
+      tags:
+      - Discord Bots
+  /discord/channels:
+    get:
+      description: Get all channels, optionally filtered by bot
+      parameters:
+      - description: Filter by bot ID
+        in: query
+        name: bot_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of channels
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: List Discord channels
+      tags:
+      - Discord Channels
+    post:
+      consumes:
+      - application/json
+      description: Register a channel with webhook for a bot
+      parameters:
+      - description: Channel configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateDiscordChannelRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.DiscordChannel'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Create a Discord channel config
+      tags:
+      - Discord Channels
+  /discord/channels/{channelId}:
+    delete:
+      description: Remove a channel configuration
+      parameters:
+      - description: Channel config ID
+        in: path
+        name: channelId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deletion status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Channel not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Delete a Discord channel
+      tags:
+      - Discord Channels
+    get:
+      description: Get channel details
+      parameters:
+      - description: Channel config ID
+        in: path
+        name: channelId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DiscordChannel'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Channel not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get a Discord channel
+      tags:
+      - Discord Channels
+    put:
+      consumes:
+      - application/json
+      description: Update channel settings or webhook
+      parameters:
+      - description: Channel config ID
+        in: path
+        name: channelId
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateDiscordChannelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DiscordChannel'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Update a Discord channel
+      tags:
+      - Discord Channels
+  /discord/test:
+    post:
+      consumes:
+      - application/json
+      description: Send a test message to verify webhook configuration
+      parameters:
+      - description: Test webhook request
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            channel_id:
+              type: string
+            message:
+              type: string
+            webhook_url:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Test result
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Webhook error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Test Discord webhook
+      tags:
+      - Discord
+  /executions/recent:
+    get:
+      description: Get the most recent executions across all tasks
+      parameters:
+      - default: 20
+        description: Number of executions to return
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Recent executions
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get recent executions
+      tags:
+      - Executions
+  /health:
+    get:
+      description: Check if the API is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Health status
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - System
+  /status:
+    get:
+      description: Get detailed system status including task and execution counts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System status
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: System status
+      tags:
+      - System
+  /tasks:
+    get:
+      description: Get a paginated list of tasks with optional status filter
+      parameters:
+      - default: 50
+        description: Number of tasks to return
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by status (enabled, disabled, running)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tasks list with pagination
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: List all tasks
+      tags:
+      - Tasks
+    post:
+      consumes:
+      - application/json
+      description: Create a new scheduled task with pipeline configuration
+      parameters:
+      - description: Task configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Task'
+        "400":
+          description: Invalid request or pipeline
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Create a new task
+      tags:
+      - Tasks
+  /tasks/{id}:
+    delete:
+      description: Delete a task and remove it from the scheduler
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deletion status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Delete a task
+      tags:
+      - Tasks
+    get:
+      description: Get details of a specific task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Task'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get a task
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: Update an existing task's configuration
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated task configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Task'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Task not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Update a task
+      tags:
+      - Tasks
+  /tasks/{id}/executions:
+    get:
+      description: Get paginated list of executions for a specific task
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 20
+        description: Number of executions to return
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Executions list
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get task executions
+      tags:
+      - Executions
+  /tasks/{id}/executions/{execId}:
+    get:
+      description: Get details of a specific execution
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Execution ID
+        in: path
+        name: execId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Execution'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Execution not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get execution details
+      tags:
+      - Executions
+  /tasks/{id}/run:
+    post:
+      description: Execute a task immediately regardless of its schedule
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Execution'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Execution error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Trigger a task manually
+      tags:
+      - Tasks
+  /tasks/{taskId}/discord:
+    delete:
+      description: Remove the Discord configuration for a task
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deletion status
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Delete task Discord config
+      tags:
+      - Task Discord Config
+    get:
+      description: Get the Discord configuration for a task
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TaskDiscordConfig'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Config not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Get task Discord config
+      tags:
+      - Task Discord Config
+    put:
+      consumes:
+      - application/json
+      description: Configure which bot/channel/webhook a task uses for notifications
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: string
+      - description: Discord configuration
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.SetTaskDiscordConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TaskDiscordConfig'
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      - ApiKeyAuth: []
+      summary: Set task Discord config
+      tags:
+      - Task Discord Config
+securityDefinitions:
+  ApiKeyAuth:
+    description: Enter your API key
+    in: header
+    name: X-API-Key
+    type: apiKey
+  BearerAuth:
+    description: Enter your JWT token with the `Bearer ` prefix, e.g. "Bearer eyJhbGci..."
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
