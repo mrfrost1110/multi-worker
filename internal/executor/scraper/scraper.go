@@ -45,6 +45,15 @@ func NewRegistry(cfg config.ScraperConfig) *Registry {
 	registry.sources["devto"] = NewDevToScraper(client)
 	registry.sources["producthunt"] = NewProductHuntScraper(client)
 
+	// Register Indonesian job scrapers
+	registry.sources["glints_indonesia"] = NewGlintsIndonesiaScraper(client)
+	registry.sources["jobstreet_indonesia"] = NewJobstreetIndonesiaScraper(client)
+	registry.sources["kalibrr_indonesia"] = NewKalibrrIndonesiaScraper(client)
+	registry.sources["linkedin_indonesia"] = NewLinkedInIndonesiaScraper(client)
+	registry.sources["indeed_indonesia"] = NewIndeedIndonesiaScraper(client)
+	registry.sources["techinasia_jobs"] = NewTechInAsiaJobsScraper(client)
+	registry.sources["remoteok_indonesia"] = NewRemoteOKIndonesiaScraper(client)
+
 	return registry
 }
 
