@@ -108,6 +108,15 @@ func (p *AnthropicProvider) doRequest(ctx context.Context, reqBody anthropicRequ
 		return "", fmt.Errorf("failed to read response: %w", err)
 	}
 
+	// Check HTTP status code
+	if resp.StatusCode != http.StatusOK {
+		var result anthropicResponse
+		if err := json.Unmarshal(body, &result); err == nil && result.Error != nil {
+			return "", fmt.Errorf("Anthropic API error (HTTP %d): %s", resp.StatusCode, result.Error.Message)
+		}
+		return "", fmt.Errorf("Anthropic API error: HTTP %d - %s", resp.StatusCode, string(body))
+	}
+
 	var result anthropicResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", fmt.Errorf("failed to parse response: %w", err)

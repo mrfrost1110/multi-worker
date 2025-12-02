@@ -122,6 +122,15 @@ func (p *GoogleProvider) doRequest(ctx context.Context, reqBody googleRequest) (
 		return "", fmt.Errorf("failed to read response: %w", err)
 	}
 
+	// Check HTTP status code
+	if resp.StatusCode != http.StatusOK {
+		var result googleResponse
+		if err := json.Unmarshal(body, &result); err == nil && result.Error != nil {
+			return "", fmt.Errorf("Google API error (HTTP %d): %s", resp.StatusCode, result.Error.Message)
+		}
+		return "", fmt.Errorf("Google API error: HTTP %d - %s", resp.StatusCode, string(body))
+	}
+
 	var result googleResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", fmt.Errorf("failed to parse response: %w", err)

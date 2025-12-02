@@ -82,9 +82,16 @@ func (e *Executor) Execute(ctx context.Context, input *model.ExecutorResult, con
 		metadata["input_items"] = input.ItemCount
 	}
 
+	// Calculate item count for result
+	itemCount := 1
+	if input != nil && input.ItemCount > 0 {
+		itemCount = input.ItemCount
+	}
+
 	return &model.ExecutorResult{
-		Data:     responseData,
-		Metadata: metadata,
+		Data:      responseData,
+		ItemCount: itemCount,
+		Metadata:  metadata,
 	}, nil
 }
 

@@ -119,6 +119,15 @@ func (p *OpenAIProvider) doRequest(ctx context.Context, reqBody openAIRequest) (
 		return "", fmt.Errorf("failed to read response: %w", err)
 	}
 
+	// Check HTTP status code
+	if resp.StatusCode != http.StatusOK {
+		var result openAIResponse
+		if err := json.Unmarshal(body, &result); err == nil && result.Error != nil {
+			return "", fmt.Errorf("OpenAI API error (HTTP %d): %s", resp.StatusCode, result.Error.Message)
+		}
+		return "", fmt.Errorf("OpenAI API error: HTTP %d - %s", resp.StatusCode, string(body))
+	}
+
 	var result openAIResponse
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", fmt.Errorf("failed to parse response: %w", err)
