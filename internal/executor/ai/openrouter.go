@@ -13,18 +13,23 @@ import (
 )
 
 // OpenRouterProvider uses OpenAI-compatible API
+// See: https://openrouter.ai/docs/quickstart
 type OpenRouterProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
-	client  *http.Client
+	apiKey   string
+	model    string
+	baseURL  string
+	siteURL  string
+	siteName string
+	client   *http.Client
 }
 
 func NewOpenRouterProvider(cfg config.OpenRouterConfig) *OpenRouterProvider {
 	return &OpenRouterProvider{
-		apiKey:  cfg.APIKey,
-		model:   cfg.Model,
-		baseURL: cfg.BaseURL,
+		apiKey:   cfg.APIKey,
+		model:    cfg.Model,
+		baseURL:  cfg.BaseURL,
+		siteURL:  cfg.SiteURL,
+		siteName: cfg.SiteName,
 		client: &http.Client{
 			Timeout: 60 * time.Second,
 		},
@@ -77,8 +82,14 @@ func (p *OpenRouterProvider) doRequest(ctx context.Context, reqBody openAIReques
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+p.apiKey)
-	req.Header.Set("HTTP-Referer", "https://github.com/multi-worker")
-	req.Header.Set("X-Title", "Multi-Worker Scheduler")
+
+	// Optional headers for OpenRouter rankings
+	if p.siteURL != "" {
+		req.Header.Set("HTTP-Referer", p.siteURL)
+	}
+	if p.siteName != "" {
+		req.Header.Set("X-Title", p.siteName)
+	}
 
 	resp, err := p.client.Do(req)
 	if err != nil {

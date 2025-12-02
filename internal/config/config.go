@@ -66,9 +66,11 @@ type GoogleConfig struct {
 }
 
 type OpenRouterConfig struct {
-	APIKey  string
-	Model   string
-	BaseURL string
+	APIKey   string
+	Model    string
+	BaseURL  string
+	SiteURL  string // Optional. For rankings on openrouter.ai
+	SiteName string // Optional. For rankings on openrouter.ai
 }
 
 type DeepSeekConfig struct {
@@ -130,9 +132,11 @@ func Load() *Config {
 				BaseURL: getEnv("GOOGLE_BASE_URL", "https://generativelanguage.googleapis.com/v1beta"),
 			},
 			OpenRouter: OpenRouterConfig{
-				APIKey:  getEnv("OPENROUTER_API_KEY", ""),
-				Model:   getEnv("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
-				BaseURL: getEnv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+				APIKey:   getEnv("OPENROUTER_API_KEY", ""),
+				Model:    getEnv("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
+				BaseURL:  getEnv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+				SiteURL:  getEnv("OPENROUTER_SITE_URL", "https://github.com/multi-worker"),
+				SiteName: getEnv("OPENROUTER_SITE_NAME", "Multi-Worker Scheduler"),
 			},
 			DeepSeek: DeepSeekConfig{
 				APIKey:  getEnv("DEEPSEEK_API_KEY", ""),
