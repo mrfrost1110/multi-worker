@@ -54,6 +54,12 @@ func NewRegistry(cfg config.ScraperConfig) *Registry {
 	registry.sources["techinasia_jobs"] = NewTechInAsiaJobsScraper(client)
 	registry.sources["remoteok_indonesia"] = NewRemoteOKIndonesiaScraper(client)
 
+	// Register Jakarta/Bekasi specific scrapers (entry-level friendly)
+	registry.sources["jakarta_bekasi_jobs"] = NewJakartaBekasiJobScraper(client)
+	registry.sources["entry_level_jobs"] = NewEntryLevelJobScraper(client)
+	registry.sources["remote_jakarta"] = NewRemoteJakartaScraper(client)
+	registry.sources["loker_jakarta"] = NewLokerJakartaScraper(client)
+
 	return registry
 }
 
